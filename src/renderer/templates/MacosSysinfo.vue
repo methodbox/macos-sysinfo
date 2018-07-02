@@ -1,30 +1,47 @@
 <template>
   <div>
-    <button @click="getHostname">Hostname</button>
-    <button @click="getCores">CPU Model</button>
-    <button @click="getNetwork">Network</button>
-    <button @click="getOSVersion">macOS Version</button>
-    <ul>
-      <li>
-        {{ hostName }}
+    <div class="btn-group">
+      <button class="btn" @click="getHostname">Hostname</button>
+      <button class="btn" @click="getCores">CPU Model</button>
+      <button class="btn" @click="getNetwork">Network</button>
+      <button class="btn" @click="getOSVersion">macOS Version</button>
+      <button class="btn" @click="getMemory">RAM</button>
+      <button class="btn btn-reset" @click="resetStats">RESET</button>
+    </div>
+    <ul id="stats-list">
+      <li v-if="hostName">
+        <h3>Hostname: {{ hostName }}</h3>
       </li>
-      <li v-if="osVersion.ProductName !== ''">
+      <li v-if="processor.model">
+        <h3>Processor Details</h3>
+        <p>Model: {{ processor.model }}</p>
+        <p>Cores: {{ processor.count }}</p>
+        <p>Architecture: {{ processor.arch }}</p>
+      </li>
+      <li v-if="osVersion.ProductName">
         <h3>macOS Version Information</h3>
-        <ul>
-          <li>{{ osVersion.ProductName }}</li>
-          <li>{{ osVersion.ProductVersion }}</li>
-          <li>{{ osVersion.BuildVersion }}</li>
-        </ul>
+        <p>{{ osVersion.ProductName }}</p>
+        <p>{{ osVersion.ProductVersion }}</p>
+        <p>{{ osVersion.BuildVersion }}</p>
       </li>
-      <li v-for="(core) in cpuModel" :key="core.id">
-        {{ core }}
+      <li v-if="systemMemory">
+        <h3>Total System RAM</h3>
+        <p>{{ systemMemory }} GB</p>
       </li>
-      <li v-for="(netIf, netKey) in netInterfacev4" v-bind:key="netKey.id" v-if="netInterfacev4 !== []">
-        <h3>IPV4 Network Interface</h3>
-        <p>{{ netIf.address }}</p>
-        <p>{{ netIf.netmask }}</p>
-        <p>{{ netIf.family }}</p>
-        <p>{{ netIf.mac }}</p>
+      <li>
+        <div v-if="netInterfacev4.address">
+          <h3>IPv4 Network Interface</h3>
+          <p><span id="ip-address-v4">IPv4 Address: </span> {{ netInterfacev4.address }}</p>
+          <p><span id="subnet-mask-v4">Subnet Mask: </span>{{ netInterfacev4.netmask }}</p>
+          <p><span id="mac-address-v4">MAC Address: </span>{{ netInterfacev4.mac }}</p>
+          <p></p>
+        </div>
+        <div v-if="netInterfacev6.address">
+          <h3>IPv6 Network Interface</h3>
+          <p><span id="ip-address-v6">IPv6 Address: </span> {{ netInterfacev6.address }}</p>
+          <p><span id="subnet-mask-v6">Subnet Mask: </span>{{ netInterfacev6.netmask }}</p>
+          <p><span id="mac-address-v6">MAC Address: </span>{{ netInterfacev6.mac }}</p>
+        </div>
       </li>
     </ul>
   </div>
@@ -33,7 +50,29 @@
   li {
     list-style: none;
     margin-left: -25px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  h3 {
+    color: purple
+  }
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 2px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  .btn:hover {
+    background: #4668a5
+  }
+  .btn-group {
+    margin-left: 12%;
+  }
+  .btn-reset {
+    background-color: red
+  }
+  #stats-list {
+    margin-left: 20%;
   }
 </style>
 
@@ -45,17 +84,34 @@
     data() {
       return {
         osVersion: {
-          ProductName: '',
-          ProductVersion: '',
-          BuildVersion: ''
+          ProductName: null,
+          ProductVersion: null,
+          BuildVersion: null
         },
         hostName: null,
-        cpuModel: [],
-        netInterfacev4: [],
-        netInterfacev6: []
+        processor: {
+          model: null,
+          arch: null,
+          count: null 
+        },
+        systemMemory: null,
+        netInterfacev4: {},
+        netInterfacev6: {}
       }
     },
     methods: {
+      resetStats() {
+          this.osVersion.ProductName = null
+          this.osVersion.ProductVersion = null
+          this.osVersion.BuildVersion = null
+          this.hostName = null
+          this.processor.model = null
+          this.processor.arch = null
+          this.processor.count = null
+          this.systemMemory = null
+          this.netInterfacev4 = {}
+          this.netInterfacev6 = {}
+      },
       getOSVersion() {
         nodeCMD.get(
           'sw_vers',
@@ -69,24 +125,22 @@
       },
       getHostname() {
         this.hostname = null
-        let hostname = os.hostname()
-        this.hostName = hostname
+        this.hostName = os.hostname()
       },
       getCores() {
         let cores = os.cpus()
-        let coreCount = 0
-        this.cpuModel = []
-        cores.forEach((core) => {
-          coreCount += 1
-          this.cpuModel.push('Core ' + coreCount + ' ' + core.model)
-        })
+        this.processor.model = os.cpus()[0].model
+        this.processor.arch = os.arch()
+        this.processor.count = os.cpus().length
+      },
+      getMemory() {
+        let totalRAM = os.totalmem()
+        this.systemMemory = parseInt(totalRAM * 1e-6 / 1024)
       },
       getNetwork() {
-        this.netInterfacev6 = []
-        this.netInterfacev4 = []
         let network = os.networkInterfaces().en0
-        this.netInterfacev6.push(network[0])
-        this.netInterfacev4.push(network[1])
+        this.netInterfacev6 = network[0]
+        this.netInterfacev4 = network[1]
       }
     }
   }

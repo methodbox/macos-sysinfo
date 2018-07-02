@@ -6,8 +6,9 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 app.on('ready', () => {
   let window = new BrowserWindow({
-    width: 1920,
-    height: 1080
+    width: 720,
+    height: 1000,
+    titleBarStyle: 'hidden'
   })
   if (isDevelopment) {
     window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
