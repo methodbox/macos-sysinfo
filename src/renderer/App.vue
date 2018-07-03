@@ -1,22 +1,19 @@
 <template>
-  <div>
-    <h2 id="app-title">{{name}}</h2>
-    <macos-sysinfo></macos-sysinfo>
+  <div id="app-body" class="card">
+    <div class="text-center card-header alert-primary">{{name}}</div>
+    <div class="card-body">
+      <macos-sysinfo></macos-sysinfo>
+    </div>
   </div>
 </template>
 <style>
-  body {
-    background: cornflowerblue;
-    color: lightgray;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
-  }
-  #app-title {
-    padding: 30px;
-    text-align: center;
+  #app-body {
+    border: none;
   }
 </style>
 
 <script>
+  import 'bootstrap/dist/css/bootstrap.min.css'
   import MacosSysinfo from './templates/MacosSysinfo'
   export default {
     data() {

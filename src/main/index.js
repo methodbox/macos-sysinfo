@@ -6,8 +6,8 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 app.on('ready', () => {
   let window = new BrowserWindow({
-    width: 720,
-    height: 1000,
+    width: 1200,
+    height: 540,
     titleBarStyle: 'hidden'
   })
   if (isDevelopment) {

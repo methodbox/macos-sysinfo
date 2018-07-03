@@ -1,78 +1,54 @@
 <template>
   <div>
-    <div class="btn-group">
-      <button class="btn" @click="getHostname">Hostname</button>
-      <button class="btn" @click="getCores">CPU Model</button>
-      <button class="btn" @click="getNetwork">Network</button>
-      <button class="btn" @click="getOSVersion">macOS Version</button>
-      <button class="btn" @click="getMemory">RAM</button>
-      <button class="btn btn-reset" @click="resetStats">RESET</button>
+    <div class="container" id="stats-container">
+      <div class="card-columns">
+        <div class="card alert-success" id="proc-div">
+          <div class="card-header">Processor Details</div>
+          <div class="card-body">
+            <processor :model="processor.model" :arch="processor.arch" :count="processor.count"></processor>
+          </div>
+        </div>
+        <div class="card alert-success">
+          <div class="card-header">System Memory</div>
+          <div class="card-body">
+            Total RAM: {{ systemMemory}}<span v-if="systemMemory"> GB</span>
+          </div>
+        </div>
+        <div class="card alert-warning">
+          <div class="card-header">Network Interfaces</div>
+          <div class="card-body">
+            <network-interface
+            :v4address="netInterfacev4.address"
+            :v4netmask="netInterfacev4.netmask"
+            :v4mac="netInterfacev4.mac"
+            :v6address="netInterfacev6.address"
+            :v6netmask="netInterfacev6.netmask"
+            :v6mac="netInterfacev6.mac"
+            ></network-interface>
+          </div>
+        </div>
+        <div class="card alert-dark">
+          <div class="card-header">macOS Version Information</div>
+          <div class="card-body">
+            <os-version :ProductName="osVersion.ProductName" :ProductVersion="osVersion.ProductVersion" :BuildVersion="osVersion.BuildVersion"></os-version>
+          </div>
+        </div>
+        <div class="card alert-dark">
+          <div class="card-header">Computer Name (Hostname)</div>
+          <div class="card-body">
+            Name: {{ hostName }}
+          </div>
+        </div>
+      </div>
     </div>
-    <ul id="stats-list">
-      <li v-if="hostName">
-        <h3>Hostname: {{ hostName }}</h3>
-      </li>
-      <li v-if="processor.model">
-        <h3>Processor Details</h3>
-        <p>Model: {{ processor.model }}</p>
-        <p>Cores: {{ processor.count }}</p>
-        <p>Architecture: {{ processor.arch }}</p>
-      </li>
-      <li v-if="osVersion.ProductName">
-        <h3>macOS Version Information</h3>
-        <p>{{ osVersion.ProductName }}</p>
-        <p>{{ osVersion.ProductVersion }}</p>
-        <p>{{ osVersion.BuildVersion }}</p>
-      </li>
-      <li v-if="systemMemory">
-        <h3>Total System RAM</h3>
-        <p>{{ systemMemory }} GB</p>
-      </li>
-      <li>
-        <div v-if="netInterfacev4.address">
-          <h3>IPv4 Network Interface</h3>
-          <p><span id="ip-address-v4">IPv4 Address: </span> {{ netInterfacev4.address }}</p>
-          <p><span id="subnet-mask-v4">Subnet Mask: </span>{{ netInterfacev4.netmask }}</p>
-          <p><span id="mac-address-v4">MAC Address: </span>{{ netInterfacev4.mac }}</p>
-          <p></p>
-        </div>
-        <div v-if="netInterfacev6.address">
-          <h3>IPv6 Network Interface</h3>
-          <p><span id="ip-address-v6">IPv6 Address: </span> {{ netInterfacev6.address }}</p>
-          <p><span id="subnet-mask-v6">Subnet Mask: </span>{{ netInterfacev6.netmask }}</p>
-          <p><span id="mac-address-v6">MAC Address: </span>{{ netInterfacev6.mac }}</p>
-        </div>
-      </li>
-    </ul>
   </div>
 </template>
 <style>
-  li {
-    list-style: none;
-    margin-left: -25px;
-    margin-bottom: 20px;
-  }
-  h3 {
-    color: purple
+  #stats-container {
+    padding: 24px;
   }
   .btn {
-    padding: 10px 20px;
-    border: none;
     border-radius: 2px;
-    color: #fff;
-    text-transform: uppercase;
-  }
-  .btn:hover {
-    background: #4668a5
-  }
-  .btn-group {
-    margin-left: 12%;
-  }
-  .btn-reset {
-    background-color: red
-  }
-  #stats-list {
-    margin-left: 20%;
   }
 </style>
 
@@ -80,6 +56,11 @@
 <script>
   import os from 'os'
   import nodeCMD from 'node-cmd'
+  //  Templates
+  import Processor from './Processor'
+  import OsVersion from './OsVersion'
+  import SystemMemory from './SystemMemory'
+  import NetworkInterface from './NetworkInterface'
   export default {
     data() {
       return {
@@ -98,6 +79,19 @@
         netInterfacev4: {},
         netInterfacev6: {}
       }
+    },
+    components: {
+      Processor,
+      OsVersion,
+      SystemMemory,
+      NetworkInterface
+    },
+    created() {
+      this.getOSVersion()
+      this.getHostname()
+      this.getCores()
+      this.getMemory()
+      this.getNetwork()
     },
     methods: {
       resetStats() {
