@@ -9,9 +9,13 @@
 Currently supports:
 
 CPU model, speed and arch.
+
 Network interface (en0 only  IPv4/6)
+
 Hostname
+
 OS Version
+
 RAM
 
 #### Basic Usage
