@@ -2,7 +2,7 @@
 
 ## Electron, Webpack, Vue JS System Info app for macOS.
 
-Still a work in progress. Temporary styling.
+
 
 ### Super-alpha release @ https://github.com/methodbox/macos-sysinfo/releases
 
