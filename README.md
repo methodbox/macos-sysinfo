@@ -30,7 +30,7 @@ cd macos-sysinfo
 npm install
 ```
 
-##### Run the App or Build
+#### Run the App or Build
 ```bash
 # Run the app without building
 npm start
@@ -39,5 +39,5 @@ npm start
 npm run build
 ```
 
-##### Install the app on your Mac
+#### Install the app on your Mac
 After building you will find a `.dmg` file in the `dist` folder `macos-sysinfo/dist/macos-sysinfo-[version].dmg`. Double-click the `.dmg` file and drag-and-drop the app into you Applications folder.
