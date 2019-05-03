@@ -2,7 +2,7 @@
 
 ## Built With
 
-![Image of Electron](https://avatars3.githubusercontent.com/u/13409222?s=200&v=4)
+![logo](https://avatars3.githubusercontent.com/u/13409222?s=200&v=4)
 ![Image of Vue](https://avatars3.githubusercontent.com/u/6128107?s=200&v=4)
 ![Image of webpack](https://avatars1.githubusercontent.com/u/2105791?s=200&v=4)
 
